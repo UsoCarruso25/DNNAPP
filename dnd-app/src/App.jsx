@@ -1,11 +1,5 @@
 
 import { BrowserRouter } from 'react-router-dom'
-
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <BrowserRouter basename="/DNNAPP">
-    <App />
-  </BrowserRouter>
-)
 import Navbar from "./components/Navbar";
 import { useState, useEffect } from "react";
 
