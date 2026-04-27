@@ -14,6 +14,21 @@ export default function Original() {
   const [respuestaBloqueada, setRespuestaBloqueada] = useState(false);
 
   useEffect(() => {
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = `
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+    return () => document.head.removeChild(styleSheet);
+  }, []);
+
+  useEffect(() => {
     fetch(URL)
       .then(res => res.json())
       .then(data => {
@@ -55,25 +70,22 @@ export default function Original() {
 
   const generarPregunta = (rondaActual) => {
     if (!items.length) return;
-    
-    // Seleccionar objeto aleatorio
+
     const objetoCorrecto = items[Math.floor(Math.random() * items.length)];
-    
-    // Generar opciones (1 correcta + 3 aleatorias)
+
     const otrasOpciones = items
       .filter(i => i.index !== objetoCorrecto.index)
       .sort(() => 0.5 - Math.random())
       .slice(0, 3);
-    
+
     const todasOpciones = [objetoCorrecto, ...otrasOpciones];
     const opcionesMezcladas = todasOpciones.sort(() => 0.5 - Math.random());
-    
-    // Determinar tipo de pregunta según la ronda
+
     const tiposPregunta = ["rareza", "poder", "nombre"];
     const tipo = tiposPregunta[(rondaActual - 1) % 3];
-    
+
     let pregunta = {};
-    
+
     if (tipo === "rareza") {
       pregunta = {
         texto: `¿Cuál es la rareza de "${objetoCorrecto.name}"?`,
@@ -95,7 +107,7 @@ export default function Original() {
         objetos: opcionesMezcladas
       };
     }
-    
+
     setPreguntaActual(pregunta);
     setOpciones(opcionesMezcladas);
     setRespuestaBloqueada(false);
@@ -113,10 +125,10 @@ export default function Original() {
 
   const verificarRespuesta = (respuestaUsuario) => {
     if (respuestaBloqueada) return;
-    
+
     setRespuestaBloqueada(true);
     let correcto = false;
-    
+
     if (preguntaActual.tipo === "rareza") {
       correcto = respuestaUsuario === preguntaActual.respuesta;
     } else if (preguntaActual.tipo === "poder") {
@@ -124,18 +136,22 @@ export default function Original() {
     } else {
       correcto = respuestaUsuario.index === preguntaActual.respuesta.index;
     }
-    
+
     if (correcto) {
       const puntosGanados = Math.floor(Math.random() * 20) + 10;
       setPuntuacion(prev => prev + puntosGanados);
       setMensaje(`¡Correcto! +${puntosGanados} puntos`);
-      
+
       setTimeout(() => {
         if (ronda < 10) {
           setRonda(prev => prev + 1);
           generarPregunta(ronda + 1);
         } else {
           setMensaje(`¡Juego completado! Puntuación final: ${puntuacion + puntosGanados}`);
+          const record = parseInt(localStorage.getItem("recordGrimorio") || "0");
+          if (puntuacion + puntosGanados > record) {
+            localStorage.setItem("recordGrimorio", puntuacion + puntosGanados);
+          }
           setJuegoActivo(false);
         }
       }, 1500);
@@ -163,7 +179,7 @@ export default function Original() {
           <h1 style={styles.title}>El Desafío del Grimorio</h1>
           <p style={styles.subtitle}>Pon a prueba tu conocimiento arcano</p>
         </div>
-        
+
         <div style={styles.statsPanel}>
           <div style={styles.statCard}>
             <span style={styles.statLabel}>récord</span>
@@ -176,19 +192,19 @@ export default function Original() {
             <span style={styles.statValue}>10</span>
           </div>
         </div>
-        
+
         <div style={styles.reglasContainer}>
           <h3 style={styles.reglasTitulo}>⚜️ reglas del desafío ⚜️</h3>
           <ul style={styles.reglasLista}>
-            <li> 10 rondas de conocimiento mágico</li>
-            <li> Preguntas sobre rareza, poder y comparaciones</li>
-            <li> Cada acierto suma puntos según la dificultad</li>
-            <li> Un error y el juego termina</li>
-            <li> ¿Podrás superar tu propio récord?</li>
+            <li>10 rondas de conocimiento mágico</li>
+            <li>Preguntas sobre rareza, poder y comparaciones</li>
+            <li>Cada acierto suma puntos según la dificultad</li>
+            <li>Un error y el juego termina</li>
+            <li>¿Podrás superar tu propio récord?</li>
           </ul>
         </div>
-        
-        <button 
+
+        <button
           onClick={iniciarJuego}
           style={styles.iniciarBtn}
           onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
@@ -204,14 +220,10 @@ export default function Original() {
     <div style={styles.container}>
       <div style={styles.gameHeader}>
         <div style={styles.gameStats}>
-          <div style={styles.rondaBadge}>
-            ronda {ronda}/10
-          </div>
-          <div style={styles.puntuacionBadge}>
-            puntuación: {puntuacion}
-          </div>
+          <div style={styles.rondaBadge}>ronda {ronda}/10</div>
+          <div style={styles.puntuacionBadge}>puntuación: {puntuacion}</div>
         </div>
-        
+
         <div style={styles.barraProgreso}>
           <div style={{
             ...styles.progresoFill,
@@ -219,11 +231,11 @@ export default function Original() {
           }}></div>
         </div>
       </div>
-      
+
       <div style={styles.preguntaContainer}>
         <p style={styles.preguntaTexto}>{preguntaActual?.texto}</p>
       </div>
-      
+
       <div style={styles.opcionesContainer}>
         {preguntaActual?.tipo === "rareza" && (
           <div style={styles.botonesRareza}>
@@ -243,7 +255,7 @@ export default function Original() {
             ))}
           </div>
         )}
-        
+
         {preguntaActual?.tipo === "poder" && (
           <div style={styles.botonesPoder}>
             {["bajo", "medio", "alto"].map(rango => (
@@ -261,7 +273,7 @@ export default function Original() {
             ))}
           </div>
         )}
-        
+
         {preguntaActual?.tipo === "comparacion" && (
           <div style={styles.botonesComparacion}>
             {opciones.map(obj => (
@@ -283,7 +295,7 @@ export default function Original() {
           </div>
         )}
       </div>
-      
+
       {mensaje && (
         <div style={styles.mensajeContainer}>
           <p style={styles.mensaje}>{mensaje}</p>
@@ -573,23 +585,3 @@ const styles = {
     letterSpacing: "1px"
   }
 };
-
-// Animaciones
-const styleSheet = document.createElement("style");
-styleSheet.textContent = `
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-  
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateX(-50%) translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-  }
-`;
-document.head.appendChild(styleSheet);

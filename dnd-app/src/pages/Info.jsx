@@ -10,24 +10,29 @@ export default function Info() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = `
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+    return () => document.head.removeChild(styleSheet);
+  }, []);
+
+  useEffect(() => {
     fetch(URL)
       .then(res => res.json())
       .then(data => {
         const items = data.results;
         setTotalItems(items.length);
-        
-        const stats = {
-          comun: 0,
-          raro: 0,
-          epico: 0,
-          legendario: 0
-        };
-        
+
+        const stats = { comun: 0, raro: 0, epico: 0, legendario: 0 };
         items.forEach(item => {
           const rareza = calcularRareza(item.name);
           stats[rareza]++;
         });
-        
+
         setRarezaStats(stats);
         setUltimaActualizacion(new Date().toLocaleDateString());
         setIsLoading(false);
@@ -63,19 +68,19 @@ export default function Info() {
 
   return (
     <div style={styles.container}>
-      
+
       <div style={styles.card}>
         <div style={styles.cardBorder}>
           <div style={styles.cardInner}>
-            
+
             <div style={styles.atributo}>
               <span style={styles.atributoText}>✦ MAGIA ✦</span>
             </div>
-            
+
             <div style={styles.nombreContainer}>
               <h1 style={styles.nombre}>Compendio Arcano</h1>
             </div>
-            
+
             <div style={styles.nivelContainer}>
               <div style={styles.nivel}>
                 <span style={styles.nivelLabel}>NIVEL</span>
@@ -84,27 +89,26 @@ export default function Info() {
               </div>
             </div>
 
-            {/* IMAGEN DENTRO DEL MARCO CON BORDE DORADO */}
             <div style={styles.arteContainer}>
               <div style={styles.arte}>
-                <img 
-                  src={miImagen} 
+                <img
+                  src={miImagen}
                   alt="D&D"
                   style={styles.arteImagen}
                 />
               </div>
             </div>
-            
+
             <div style={styles.descripcionContainer}>
               <div style={styles.descripcionBorder}>
                 <p style={styles.descripcionText}>
-                  Esta carta representa la conexión con la API oficial de Dungeons & Dragons 5e, 
-                  una fuente de conocimiento ancestral que contiene informacion sobre hechizos, 
+                  Esta carta representa la conexión con la API oficial de Dungeons & Dragons 5e,
+                  una fuente de conocimiento ancestral que contiene informacion sobre hechizos,
                   monstruos, objetos magicos y mas del universo de los Calabozos y Dragones.
                 </p>
               </div>
             </div>
-          
+
             <div style={styles.infoContainer}>
               <div style={styles.infoLeft}>
                 <div style={styles.infoRow}>
@@ -127,7 +131,7 @@ export default function Info() {
                 </div>
               </div>
             </div>
-            
+
             <div style={styles.rarezaContainer}>
               <div style={styles.rarezaTitulo}>DISTRIBUCION POR RAREZA</div>
               {Object.entries(rarezaStats).map(([rareza, cantidad]) => (
@@ -147,24 +151,18 @@ export default function Info() {
                 </div>
               ))}
             </div>
-      
+
             <div style={styles.cardFooter}>
-              <div style={styles.footerLeft}>
-                <span>1ª EDICION</span>
-              </div>
-              <div style={styles.footerRight}>
-                <span>✦ D&D ✦</span>
-              </div>
+              <div style={styles.footerLeft}><span>1ª EDICION</span></div>
+              <div style={styles.footerRight}><span>✦ D&D ✦</span></div>
             </div>
-            
-            <div style={styles.cardCode}>
-              <span>DD-API-001</span>
-            </div>
-            
+
+            <div style={styles.cardCode}><span>DD-API-001</span></div>
+
           </div>
         </div>
       </div>
-      
+
       <div style={styles.creditosCard}>
         <div style={styles.creditosBorder}>
           <div style={styles.creditosInner}>
@@ -174,7 +172,7 @@ export default function Info() {
           </div>
         </div>
       </div>
-      
+
     </div>
   );
 }
@@ -219,8 +217,7 @@ const styles = {
   card: {
     maxWidth: "550px",
     width: "100%",
-    margin: "0 auto 30px auto",
-    position: "relative"
+    margin: "0 auto 30px auto"
   },
 
   cardBorder: {
@@ -355,18 +352,10 @@ const styles = {
     borderRadius: "6px"
   },
 
-  infoLeft: {
-    flex: 1
-  },
+  infoLeft: { flex: 1 },
+  infoRight: { flex: 1, textAlign: "right" },
 
-  infoRight: {
-    flex: 1,
-    textAlign: "right"
-  },
-
-  infoRow: {
-    marginBottom: "5px"
-  },
+  infoRow: { marginBottom: "5px" },
 
   infoLabel: {
     fontSize: "0.6rem",
@@ -498,11 +487,3 @@ const styles = {
     fontWeight: "bold"
   }
 };
-
-const styleSheet = document.createElement("style");
-styleSheet.textContent = `
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-`;
-document.head.appendChild(styleSheet);

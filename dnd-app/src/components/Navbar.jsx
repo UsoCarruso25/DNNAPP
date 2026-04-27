@@ -17,7 +17,7 @@ export default function Navbar() {
     { path: "/", nombre: "Home" },
     { path: "/original", nombre: "Original" },
     { path: "/favoritos", nombre: "Favoritos" },
-    { path: "/info", nombre: "Informacion", },
+    { path: "/info", nombre: "Informacion" },
     { path: "/usuario", nombre: "Usuario" }
   ];
 
@@ -26,14 +26,14 @@ export default function Navbar() {
   return (
     <nav style={{
       ...styles.nav,
-      background: scrolled 
-        ? "rgba(10, 10, 21, 0.95)" 
+      background: scrolled
+        ? "rgba(10, 10, 21, 0.95)"
         : "rgba(10, 10, 21, 0.8)",
       backdropFilter: "blur(10px)",
       borderBottom: scrolled ? "1px solid rgba(200, 180, 120, 0.2)" : "none"
     }}>
       <div style={styles.container}>
-        
+
         {/* Logo */}
         <Link to="/" style={styles.logo}>
           <span style={styles.logoSymbol}>◈</span>
@@ -64,7 +64,6 @@ export default function Navbar() {
                 }
               }}
             >
-              <span style={styles.linkIcon}>{link.icono}</span>
               <span style={styles.linkNombre}>{link.nombre}</span>
               {estaActivo(link.path) && <span style={styles.activoIndicador}></span>}
             </Link>
@@ -140,11 +139,6 @@ const styles = {
   linkActivo: {
     color: "#c8b478",
     background: "rgba(200, 180, 120, 0.1)"
-  },
-
-  linkIcon: {
-    fontSize: "0.9rem",
-    opacity: 0.7
   },
 
   linkNombre: {

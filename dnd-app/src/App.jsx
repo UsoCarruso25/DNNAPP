@@ -1,8 +1,7 @@
-
-import { BrowserRouter } from 'react-router-dom'
-import Navbar from "./components/Navbar";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 
+import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Detalle from "./pages/Detalle";
 import Favoritos from "./pages/Favoritos";
@@ -13,29 +12,29 @@ import Usuario from "./pages/Usuario";
 function App() {
   const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  setTimeout(() => setLoading(false), 2000);
-}, []);
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 2000);
+  }, []);
 
-if (loading) {
-  return (
-    <div style={{
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      background: "#0a0a1f",
-      color: "white",
-      fontSize: "2rem"
-    }}>
-      🧙 Cargando mundo mágico...
-    </div>
-  );
-}
+  if (loading) {
+    return (
+      <div style={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "#0a0a1f",
+        color: "white",
+        fontSize: "2rem"
+      }}>
+        🧙 Cargando mundo mágico...
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
       <Navbar />
-
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/detalle/:id" element={<Detalle />} />

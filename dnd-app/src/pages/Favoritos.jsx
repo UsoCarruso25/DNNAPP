@@ -5,6 +5,18 @@ export default function Favoritos() {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = `
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+    return () => document.head.removeChild(styleSheet);
+  }, []);
+
+  useEffect(() => {
     const data = JSON.parse(localStorage.getItem("favs")) || [];
     setFavs(data);
   }, []);
@@ -37,14 +49,14 @@ export default function Favoritos() {
     return patrones[rareza];
   };
 
-  const getDescripcion = (item) => {
+  const getDescripcion = (rareza) => {
     const descripciones = {
       comun: "Un objeto modesto que has guardado con cariño.",
       raro: "Un hallazgo especial que merece un lugar en tu colección.",
       epico: "Una joya arcana. Pocos tienen el privilegio de poseerlo.",
       legendario: "Un objeto de leyenda. El destino lo puso en tu camino."
     };
-    return descripciones[item.rareza];
+    return descripciones[rareza];
   };
 
   const eliminarFavorito = (item) => {
@@ -66,8 +78,8 @@ export default function Favoritos() {
       <div style={styles.header}>
         <h1 style={styles.title}>Mi Colección Arcana</h1>
         <p style={styles.subtitle}>
-          {favs.length === 0 
-            ? "Aún no has guardado ningún objeto mágico" 
+          {favs.length === 0
+            ? "Aún no has guardado ningún objeto mágico"
             : `Has reunido ${favs.length} ${favs.length === 1 ? "objeto" : "objetos"} en tu colección`}
         </p>
       </div>
@@ -75,7 +87,7 @@ export default function Favoritos() {
       {/* Botón vaciar colección */}
       {favs.length > 0 && (
         <div style={styles.vaciarContainer}>
-          <button 
+          <button
             onClick={vaciarFavoritos}
             style={styles.vaciarBtn}
             onMouseEnter={(e) => e.currentTarget.style.opacity = "0.8"}
@@ -117,9 +129,9 @@ export default function Favoritos() {
                 >
                   ✕
                 </button>
-                
+
                 <h3 style={styles.cardTitle}>{item.name}</h3>
-                
+
                 <div style={styles.rarezaContainer}>
                   <span style={{
                     ...styles.rarezaBadge,
@@ -128,7 +140,7 @@ export default function Favoritos() {
                     {rareza}
                   </span>
                 </div>
-                
+
                 <div style={styles.favoritoFecha}>
                   <span style={styles.fechaLaberinto}>⚜️</span>
                   <span style={styles.fechaText}>en tu colección</span>
@@ -154,9 +166,9 @@ export default function Favoritos() {
                     {calcularRareza(selected.name)}
                   </span>
                 </div>
-                
-                <p style={styles.descripcion}>{getDescripcion({ rareza: calcularRareza(selected.name) })}</p>
-                
+
+                <p style={styles.descripcion}>{getDescripcion(calcularRareza(selected.name))}</p>
+
                 <div style={styles.modalAcciones}>
                   <button
                     onClick={() => {
@@ -228,7 +240,6 @@ const styles = {
     cursor: "pointer",
     fontSize: "0.7rem",
     letterSpacing: "1px",
-    transition: "all 0.3s ease",
     fontFamily: "'Georgia', serif"
   },
 
@@ -290,7 +301,6 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    transition: "all 0.2s ease",
     fontFamily: "'Georgia', serif"
   },
 
@@ -404,7 +414,6 @@ const styles = {
     cursor: "pointer",
     fontSize: "0.8rem",
     letterSpacing: "1px",
-    transition: "all 0.3s ease",
     fontFamily: "'Georgia', serif"
   },
 
@@ -417,23 +426,6 @@ const styles = {
     cursor: "pointer",
     fontSize: "0.8rem",
     letterSpacing: "1px",
-    transition: "all 0.3s ease",
     fontFamily: "'Georgia', serif"
   }
 };
-
-// Animaciones
-const styleSheet = document.createElement("style");
-styleSheet.textContent = `
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-`;
-document.head.appendChild(styleSheet);

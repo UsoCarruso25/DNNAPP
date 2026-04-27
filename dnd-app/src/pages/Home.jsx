@@ -11,6 +11,17 @@ export default function Home() {
   const [favoritos, setFavoritos] = useState([]);
 
   useEffect(() => {
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = `
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+    return () => document.head.removeChild(styleSheet);
+  }, []);
+
+  useEffect(() => {
     fetch(URL)
       .then(res => res.json())
       .then(data => {
@@ -86,7 +97,7 @@ export default function Home() {
 
   return (
     <div style={styles.container}>
-      
+
       {/* Encabezado */}
       <div style={styles.header}>
         <h1 style={styles.title}>Grimorio de Objetos Mágicos</h1>
@@ -107,7 +118,7 @@ export default function Home() {
             style={styles.searchInput}
           />
           {search && (
-            <button 
+            <button
               onClick={() => setSearch("")}
               style={styles.clearBtn}
             >
@@ -126,18 +137,18 @@ export default function Home() {
             style={{
               ...styles.filterBtn,
               background: filter === tipo ? getColorPorRareza(tipo) : "rgba(255,255,255,0.03)",
-              borderColor: getColorPorRareza(tipo)
+              borderColor: getColorPorRareza(tipo) || "rgba(255,255,255,0.2)"
             }}
           >
-            {tipo === "todos" ? "todos" : tipo}
+            {tipo}
           </button>
         ))}
       </div>
 
       {/* Resultados */}
       <div style={styles.resultsCount}>
-        {itemsFiltrados.length === 0 
-          ? "ningún objeto encontrado" 
+        {itemsFiltrados.length === 0
+          ? "ningún objeto encontrado"
           : `mostrando ${itemsFiltrados.length} ${itemsFiltrados.length === 1 ? "objeto" : "objetos"}`}
       </div>
 
@@ -162,11 +173,11 @@ export default function Home() {
             >
               {esFavorito(item) ? "★" : "☆"}
             </button>
-            
+
             <Link to={`/detalle/${item.index}`} style={styles.link}>
               <h3 style={styles.cardTitle}>{item.name}</h3>
             </Link>
-            
+
             <div style={styles.rarezaContainer}>
               <span style={{
                 ...styles.rarezaBadge,
@@ -175,7 +186,7 @@ export default function Home() {
                 {item.rareza}
               </span>
             </div>
-            
+
             <div style={styles.poderContainer}>
               <div style={styles.poderLabel}>poder arcano</div>
               <div style={styles.poderBarContainer}>
@@ -277,7 +288,7 @@ const styles = {
     fontSize: "0.9rem",
     fontFamily: "'Georgia', serif",
     outline: "none",
-    transition: "all 0.3s ease"
+    boxSizing: "border-box"
   },
 
   clearBtn: {
@@ -304,7 +315,6 @@ const styles = {
     padding: "6px 18px",
     border: "1px solid",
     borderRadius: "30px",
-    background: "rgba(255,255,255,0.03)",
     color: "#e8e8e8",
     cursor: "pointer",
     fontSize: "0.75rem",
@@ -408,12 +418,3 @@ const styles = {
     textAlign: "right"
   }
 };
-
-// Animaciones
-const styleSheet = document.createElement("style");
-styleSheet.textContent = `
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-`;
-document.head.appendChild(styleSheet);
